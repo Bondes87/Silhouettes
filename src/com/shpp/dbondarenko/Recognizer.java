@@ -13,7 +13,7 @@ import java.util.Random;
  * Created by Dmitro Bondarenko on 27.05.2017.
  */
 public class Recognizer {
-    private static final int RATIO_OF_MINIMUM_TO_MAXIMUM_AREA_OF_SILHOUETTES = 4;
+    private static final int RATIO_OF_MINIMUM_TO_MAXIMUM_AREA_OF_SILHOUETTES = 7;
     private static final int RATIO_OF_ATTEMPTS_TO_THE_HEIGHT_OF_PICTURE = 25;
     private static final int BLACK = 0;
     private static final int WHITE = 255;
