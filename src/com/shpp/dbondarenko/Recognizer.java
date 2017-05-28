@@ -8,17 +8,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-
 /**
  * File: Recognizer.java
  * Created by Dmitro Bondarenko on 27.05.2017.
  */
 public class Recognizer {
+    private static final int RATIO_OF_MINIMUM_TO_MAXIMUM_AREA_OF_SILHOUETTES = 4;
+    private static final int RATIO_OF_ATTEMPTS_TO_THE_HEIGHT_OF_PICTURE = 25;
+    private static final int BLACK = 0;
+    private static final int WHITE = 255;
+    private static final int BORDER_BETWEEN_WHITE_AND_BLACK = 127;
+
     public int recognize(String imagePath) throws IOException {
         int[][] pixelsColor = readFile(imagePath);
-        System.out.println(pixelsColor.length + " " + pixelsColor[0].length);
         ArrayList<Integer> silhouettes = searchSilhouettes(pixelsColor);
-        return 0;
+        return analyzeSilhouettes(silhouettes);
     }
 
     private int[][] readFile(String imagePath) throws IOException {
@@ -29,8 +33,7 @@ public class Recognizer {
         for (int i = 0; i < imageHeight; i++) {
             for (int j = 0; j < imageWidth; j++) {
                 Color color = new Color(image.getRGB(j, i));
-                pixelsColor[i][j] = color.getRed() <= 127 ? 0 : 255;
-                //System.out.println(pixelsColor[i][j]);
+                pixelsColor[i][j] = color.getRed() <= BORDER_BETWEEN_WHITE_AND_BLACK ? BLACK : WHITE;
             }
         }
         return pixelsColor;
@@ -38,7 +41,7 @@ public class Recognizer {
 
     private ArrayList<Integer> searchSilhouettes(int[][] pixelsColor) {
         ArrayList<Integer> silhouettes = new ArrayList<>();
-        int attemptsNumber = pixelsColor.length / 25;
+        int attemptsNumber = pixelsColor.length / RATIO_OF_ATTEMPTS_TO_THE_HEIGHT_OF_PICTURE;
         while (attemptsNumber > 0) {
             int row = new Random().nextInt(pixelsColor.length);
             for (int i = 1; i < pixelsColor[row].length; i++) {
@@ -48,7 +51,6 @@ public class Recognizer {
             }
             attemptsNumber--;
         }
-        System.out.println(silhouettes);
         return silhouettes;
     }
 
@@ -83,7 +85,27 @@ public class Recognizer {
             }
             motionCoordinates.remove(0);
         }
-        System.out.println(silhouetteArea);
         return silhouetteArea;
+    }
+
+    private int analyzeSilhouettes(ArrayList<Integer> silhouettes) {
+        int silhouettesNumber = silhouettes.size();
+        int maxSilhouetteArea = findMaxNumber(silhouettes);
+        for (int silhouetteArea : silhouettes) {
+            if (silhouetteArea < maxSilhouetteArea / RATIO_OF_MINIMUM_TO_MAXIMUM_AREA_OF_SILHOUETTES) {
+                silhouettesNumber--;
+            }
+        }
+        return silhouettesNumber;
+    }
+
+    private int findMaxNumber(ArrayList<Integer> numbers) {
+        int max = numbers.get(0);
+        for (int i = 1; i < numbers.size(); i++) {
+            if (max < numbers.get(i)) {
+                max = numbers.get(i);
+            }
+        }
+        return max;
     }
 }
