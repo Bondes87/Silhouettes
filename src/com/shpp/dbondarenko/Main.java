@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         Recognizer recognizer = new Recognizer();
         try {
-            recognizer.recognize("man2.jpg");
+            recognizer.recognize("men.jpg");
         } catch (IOException e) {
             System.out.println("Image not found.");
         }

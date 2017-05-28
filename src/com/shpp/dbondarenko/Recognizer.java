@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 
 /**
@@ -37,15 +38,18 @@ public class Recognizer {
 
     private ArrayList<Integer> searchSilhouettes(int[][] pixelsColor) {
         ArrayList<Integer> silhouettes = new ArrayList<>();
-        //int attemptsNumber = new Random().nextInt(pixelsColor.length);
-        int row = 100;
-        for (int i = 1; i < pixelsColor[row].length; i++) {
-            if (pixelsColor[row][i] != pixelsColor[row][i - 1]) {
-                silhouettes.add(calculateSilhouetteArea(pixelsColor, row, i));
+        int attemptsNumber = pixelsColor.length / 25;
+        while (attemptsNumber > 0) {
+            int row = new Random().nextInt(pixelsColor.length);
+            for (int i = 1; i < pixelsColor[row].length; i++) {
+                if (pixelsColor[row][i] != pixelsColor[row][i - 1]) {
+                    silhouettes.add(calculateSilhouetteArea(pixelsColor, row, i));
+                }
             }
+            attemptsNumber--;
         }
         System.out.println(silhouettes);
-        return null;
+        return silhouettes;
     }
 
     private int calculateSilhouetteArea(int[][] pixelsColor, int row, int col) {
