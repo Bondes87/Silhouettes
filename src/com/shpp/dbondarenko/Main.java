@@ -4,6 +4,8 @@ import java.io.IOException;
 
 /**
  * File: Main.java
+ * The program that looks for the silhouettes of people in the image.
+ * The class that runs the program.
  * Created by Dmitro Bondarenko on 22.05.2017.
  */
 public class Main {
