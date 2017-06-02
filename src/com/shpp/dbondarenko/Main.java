@@ -11,11 +11,17 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         Recognizer recognizer = new Recognizer();
+        int countSilhouettes;
         try {
             if (args.length == 0) {
                 throw new Exception("No path to file specified.");
             } else {
-                System.out.println(recognizer.recognize(args[0]));
+                countSilhouettes = recognizer.recognize(args[0]);
+                if (countSilhouettes == 1) {
+                    System.out.println(countSilhouettes + " silhouette");
+                } else {
+                    System.out.println(countSilhouettes + " silhouettes");
+                }
             }
         } catch (IOException e) {
             System.out.println("Image not found.");
