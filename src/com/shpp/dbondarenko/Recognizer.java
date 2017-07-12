@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -33,7 +32,7 @@ public class Recognizer {
      */
     public int recognize(String imagePath) throws IOException {
         int[][] pixelsColor = readFile(imagePath);
-        ArrayList<Integer> silhouettes = searchSilhouettes(pixelsColor);
+        BDSArrayList<Integer> silhouettes = searchSilhouettes(pixelsColor);
         return analyzeSilhouettes(silhouettes);
     }
 
@@ -63,8 +62,8 @@ public class Recognizer {
      * @param pixelsColor The array of bytes of the image.
      * @return Returns the list of areas of silhouettes.
      */
-    private ArrayList<Integer> searchSilhouettes(int[][] pixelsColor) {
-        ArrayList<Integer> silhouettes = new ArrayList<>();
+    private BDSArrayList<Integer> searchSilhouettes(int[][] pixelsColor) {
+        BDSArrayList<Integer> silhouettes = new BDSArrayList<>();
         int attemptsNumber = pixelsColor.length / RATIO_OF_ATTEMPTS_TO_THE_HEIGHT_OF_PICTURE;
         while (attemptsNumber > 0) {
             int row = new Random().nextInt(pixelsColor.length);
@@ -88,7 +87,7 @@ public class Recognizer {
      */
     private int calculateSilhouetteArea(int[][] pixelsColor, int row, int col) {
         int silhouetteArea = 1;
-        ArrayList<int[]> motionCoordinates = new ArrayList<>();
+        BDSLinkedList<int[]> motionCoordinates = new BDSLinkedList<>();
         motionCoordinates.add(new int[]{row, col});
         pixelsColor[row][col] = pixelsColor[row][col - 1];
         while (!motionCoordinates.isEmpty()) {
@@ -114,7 +113,7 @@ public class Recognizer {
                 motionCoordinates.add(new int[]{y, x - 1});
                 pixelsColor[y][x - 1] = pixelsColor[y][x];
             }
-            motionCoordinates.remove(0);
+            motionCoordinates.poolFirst();
         }
         return silhouetteArea;
     }
@@ -125,14 +124,19 @@ public class Recognizer {
      * @param silhouettes The list of areas of possible silhouettes.
      * @return Returns the number of silhouettes.
      */
-    private int analyzeSilhouettes(ArrayList<Integer> silhouettes) {
+    private int analyzeSilhouettes(BDSArrayList<Integer> silhouettes) {
         int silhouettesNumber = silhouettes.size();
         int maxSilhouetteArea = findMaxNumber(silhouettes);
-        for (int silhouetteArea : silhouettes) {
-            if (silhouetteArea < maxSilhouetteArea / RATIO_OF_MINIMUM_TO_MAXIMUM_AREA_OF_SILHOUETTES) {
+        for (int i = 0; i < silhouettes.size(); i++) {
+            if (silhouettes.get(i) < maxSilhouetteArea / RATIO_OF_MINIMUM_TO_MAXIMUM_AREA_OF_SILHOUETTES) {
                 silhouettesNumber--;
             }
         }
+        /*for (int silhouetteArea : silhouettes) {
+            if (silhouetteArea < maxSilhouetteArea / RATIO_OF_MINIMUM_TO_MAXIMUM_AREA_OF_SILHOUETTES) {
+                silhouettesNumber--;
+            }
+        }*/
         return silhouettesNumber;
     }
 
@@ -142,7 +146,7 @@ public class Recognizer {
      * @param numbers The list of numbers.
      * @return Returns the maximum number.
      */
-    private int findMaxNumber(ArrayList<Integer> numbers) {
+    private int findMaxNumber(BDSArrayList<Integer> numbers) {
         int max = numbers.get(0);
         for (int i = 1; i < numbers.size(); i++) {
             if (max < numbers.get(i)) {
